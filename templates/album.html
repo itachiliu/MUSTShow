@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ album }} - 相册</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+    .modal-img {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: 12px;
+      display: block;
+      margin: 0 auto;
+    }
+    .desc-side {
+      width: 100%;
+      margin-top: 1rem;
+      text-align: center;
+    }
+    #descDisplay, #descForm {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .desc-box {
+      min-height: 80px;
+      width: 100%;
+      resize: vertical;
+      border-radius: 8px;
+      border: 1px solid #b3e0ff;
+      padding: 8px 12px;
+      font-size: 1.05rem;
+      font-family: 'Roboto', 'ZCOOL XiaoWei', '微软雅黑', 'Microsoft YaHei', sans-serif;
+    }
+    .img-desc, #descDisplay {
+      min-height: 2em;
+      color: #3b5998;
+      font-size: 1.08em;
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      background: #f6fbff;
+      border-radius: 6px;
+      padding: 6px 12px;
+      text-align: center;
+      font-family: 'ZCOOL XiaoWei', 'Roboto', '微软雅黑', 'Microsoft YaHei', sans-serif;
+      letter-spacing: 0.5px;
+      box-shadow: 0 1px 4px rgba(33,150,243,0.06);
+      transition: background 0.2s;
+    }
+    .img-desc {
+      font-size: 1em;
+      color: #666;
+      background: #f6fbff;
+    }
+    .modal-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.7);
+      border: none;
+      font-size: 2rem;
+      padding: 0.2em 0.6em;
+      border-radius: 50%;
+      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+    }
+    .modal-nav-btn.left { left: 10px; }
+    .modal-nav-btn.right { right: 10px; }
+    @media (min-width: 768px) {
+      .modal-dialog {
+        max-width: 700px;
+      }
+    }
+    </style>
+</head>
+<body>
+<main>
+  <div class="container py-4">
+    <h2 class="mb-4" style="color:#2196f3;">相册：{{ album }}</h2>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+      {% for img in images %}
+      <div class="col">
+        <div class="card shadow-sm border-0 h-100">
+          {% set ext = img.rsplit('.', 1)[-1].lower() %}
+          {% if ext in ['mp4', 'mov', 'avi', 'webm'] %}
+              <video class="card-img-top img-fluid rounded"
+                style="object-fit:cover;max-height:180px;cursor:pointer;"
+                data-bs-toggle="modal" data-bs-target="#imgModal"
+                data-img="{{ img }}" data-index="{{ loop.index0 }}"
+                preload="metadata" controls muted poster="/static/video_cover.png">
+              <source src="/static/uploads/{{ album }}/{{ img }}">
+        您的浏览器不支持视频播放
+            </video>
+          {% else %}
+            <img src="/static/uploads/{{ album }}/{{ img }}" class="card-img-top img-fluid rounded"
+                style="object-fit:cover;max-height:180px;cursor:pointer;"
+                data-bs-toggle="modal" data-bs-target="#imgModal"
+                data-img="{{ img }}" data-index="{{ loop.index0 }}">
+          {% endif %}
+          <div class="img-desc">{{ image_desc[img] or '暂无描述' }}</div>
+          <form method="post" action="{{ url_for('delete_file', album=album, filename=img) }}" onsubmit="return confirm('确定要删除这项吗？');">
+            <button type="submit" class="btn btn-sm btn-danger mt-2 w-100">删除</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+      {% if images|length == 0 %}
+      <div class="col-12 text-center text-muted">暂无照片</div>
+      {% endif %}
+    </div>
+    <a href="/" class="btn btn-secondary mt-4">返回相册列表</a>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="imgModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content position-relative">
+        <button type="button" class="modal-nav-btn left" id="prevBtn" title="上一张">&lt;</button>
+        <button type="button" class="modal-nav-btn right" id="nextBtn" title="下一张">&gt;</button>
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title">详情</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <img id="modalImg" class="modal-img" src="" alt="" loading="lazy" style="display:none;">
+          <video id="modalVideo" class="modal-img" style="display:none;" controls preload="metadata"></video>
+          <div class="desc-side">
+            <div id="descDisplay" style="min-height:40px;white-space:pre-wrap;"></div>
+            <form id="descForm" method="post" style="display:none;">
+              <label for="descBox" class="form-label visually-hidden">描述：</label>
+              <textarea id="descBox" name="desc" class="desc-box"></textarea>
+              <button type="submit" class="btn btn-primary mt-2">保存描述</button>
+              <button type="button" class="btn btn-secondary mt-2 ms-2" id="cancelEdit">取消</button>
+            </form>
+            <button type="button" class="btn btn-outline-primary mt-2" id="editBtn">重新编辑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const imgModal = document.getElementById('imgModal');
+const modalImg = document.getElementById('modalImg');
+const modalVideo = document.getElementById('modalVideo');
+const descBox = document.getElementById('descBox');
+const descForm = document.getElementById('descForm');
+const descDisplay = document.getElementById('descDisplay');
+const editBtn = document.getElementById('editBtn');
+const cancelEdit = document.getElementById('cancelEdit');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+let currentImg = '';
+let currentIndex = 0;
+let images = {{ images|tojson }};
+let imageDesc = {{ image_desc|tojson }};
+
+function showDesc(desc) {
+  descDisplay.textContent = desc || '暂无描述';
+  descDisplay.style.display = '';
+  descForm.style.display = 'none';
+  editBtn.style.display = '';
+}
+
+function showEdit(desc) {
+  descBox.value = desc || '';
+  descDisplay.style.display = 'none';
+  descForm.style.display = '';
+  editBtn.style.display = 'none';
+}
+
+function updateModal(idx) {
+  currentIndex = idx;
+  currentImg = images[currentIndex];
+  const ext = currentImg.split('.').pop().toLowerCase();
+  if (['mp4', 'mov', 'avi', 'webm'].includes(ext)) {
+    modalImg.style.display = 'none';
+    modalVideo.style.display = '';
+    modalVideo.src = `/static/uploads/{{ album }}/${currentImg}`;
+    modalVideo.load();
+  } else {
+    modalVideo.style.display = 'none';
+    modalImg.style.display = '';
+    modalImg.src = `/static/uploads/{{ album }}/${currentImg}`;
+  }
+  showDesc(imageDesc[currentImg]);
+}
+
+imgModal.addEventListener('show.bs.modal', function (event) {
+  const trigger = event.relatedTarget;
+  currentIndex = parseInt(trigger.getAttribute('data-index'));
+  updateModal(currentIndex);
+});
+
+editBtn.onclick = function() {
+  showEdit(imageDesc[currentImg]);
+};
+
+cancelEdit.onclick = function() {
+  showDesc(imageDesc[currentImg]);
+};
+
+descForm.onsubmit = function(e) {
+  e.preventDefault();
+  fetch(`/desc/{{ album }}/${currentImg}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: `desc=${encodeURIComponent(descBox.value)}`
+  }).then(() => {
+    imageDesc[currentImg] = descBox.value;
+    // 实时更新页面上的描述
+    document.querySelectorAll(`[data-img="${currentImg}"]`).forEach(function(img) {
+      let descDiv = img.parentElement.querySelector('.img-desc');
+      if(descDiv) descDiv.textContent = descBox.value || '暂无描述';
+    });
+    showDesc(descBox.value);
+    alert('描述已保存');
+  });
+};
+
+prevBtn.onclick = function() {
+  if (currentIndex > 0) {
+    updateModal(currentIndex - 1);
+  }
+};
+nextBtn.onclick = function() {
+  if (currentIndex < images.length - 1) {
+    updateModal(currentIndex + 1);
+  }
+};
+</script>
+</body>

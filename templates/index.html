@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -7,67 +8,69 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary"
+   style="position: absolute; top: 20px; right: 30px; z-index: 1000;">退出登录</a>
+
 <main>
   <section class="py-5 text-center container">
     <div class="row py-lg-5">
       <div class="col-lg-8 col-md-10 mx-auto">
         <h1 class="fw-light mb-3">澳门科技大学汪文勇教授团队师生纪念</h1>
         <p class="lead text-muted mb-4">记录团队点滴，见证师生情谊</p>
-        <a href="/upload" class="btn btn-primary my-2">上传照片/视频</a>
+          <a href="/upload_photo" class="btn btn-primary my-2 me-2">上传照片</a>
+          <a href="/upload_video" class="btn btn-primary my-2 me-2">上传视频</a>
+  
       </div>
     </div>
   </section>
   <div class="album py-5 bg-light">
     <div class="container">
-      <h2 class="mb-4" style="color:#2196f3;">团队照片</h2>
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
-        {% for img in images %}
-        <div class="col">
-          <div class="card shadow-sm border-0 h-100">
-            <img src="{{ url_for('static', filename='uploads/' + img) }}" class="bd-placeholder-img card-img-top" style="object-fit:cover;max-height:220px;">
+      <h2 class="mb-4" style="color:#2196f3;">照片相册</h2>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+        {% for album in photo_albums %}
+          {% set cover = album_covers[album] %}
+          <div class="col">
+            <a href="{{ url_for('album_view', album=album) }}" class="text-decoration-none text-dark">
+              <div class="card shadow-sm border-0 h-100">
+                <img src="{{ cover }}" class="card-img-top" style="object-fit:cover;max-height:200px;min-height:160px;border-radius:12px 12px 0 0;">
+                <div class="card-body text-center">
+                  <h5 class="card-title mb-0" style="color:#2196f3;">{{ album }}</h5>
+                </div>
+              </div>
+            </a>
           </div>
-        </div>
         {% endfor %}
-        {% if images|length == 0 %}
-        <div class="col-12 text-center text-muted">暂无照片</div>
+        {% if photo_albums|length == 0 %}
+        <div class="col-12 text-center text-muted">暂无相册</div>
         {% endif %}
       </div>
-      {% if pages > 1 %}
-      <nav aria-label="分页" class="d-flex justify-content-center mt-4">
-        <ul class="pagination">
-          <li class="page-item {% if page == 1 %}disabled{% endif %}">
-            <a class="page-link" href="?page={{ page-1 }}" aria-label="上一页">&laquo;</a>
-          </li>
-          {% for p in range(1, pages+1) %}
-          <li class="page-item {% if p == page %}active{% endif %}"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+      <!-- 视频相册区域 -->
+        <h2 class="mb-4 mt-5" style="color:#2196f3;">视频相册</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+          {% for album in video_albums %}
+            {% set cover = album_covers[album] %}
+            <div class="col">
+              <a href="{{ url_for('album_view', album=album) }}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 h-100">
+                  <video class="card-img-top"
+                        style="object-fit:cover;max-height:200px;min-height:160px;border-radius:12px 12px 0 0;"
+                        preload="metadata" muted playsinline>
+                    <source src="{{ cover }}">
+                    您的浏览器不支持视频播放
+                  </video>
+                  <div class="card-body text-center">
+                    <h5 class="card-title mb-0" style="color:#2196f3;">{{ album }}</h5>
+                  </div>
+                </div>
+              </a>
+            </div>
           {% endfor %}
-          <li class="page-item {% if page == pages %}disabled{% endif %}">
-            <a class="page-link" href="?page={{ page+1 }}" aria-label="下一页">&raquo;</a>
-          </li>
-        </ul>
-      </nav>
-      {% endif %}
-      <h2 class="mt-5 mb-4" style="color:#2196f3;">团队视频</h2>
-      <div class="row row-cols-1 row-cols-md-3 g-3">
-        {% for vid in videos %}
-        <div class="col">
-          <div class="card shadow-sm border-0 h-100">
-            <video controls width="100%" style="border-radius:12px;max-height:260px;object-fit:cover;">
-              <source src="{{ url_for('static', filename='uploads/' + vid) }}">
-              您的浏览器不支持视频播放。
-            </video>
-          </div>
+          {% if video_albums|length == 0 %}
+          <div class="col-12 text-center text-muted">暂无视频相册</div>
+          {% endif %}
         </div>
-        {% endfor %}
-        {% if videos|length == 0 %}
-        <div class="col-12 text-center text-muted">暂无视频</div>
-        {% endif %}
-      </div>
     </div>
   </div>
 </main>
-  </div>
-</section>
-</body>
 </body>
 </html>
