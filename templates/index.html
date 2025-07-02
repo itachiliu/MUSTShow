@@ -12,14 +12,16 @@
    style="position: absolute; top: 20px; right: 30px; z-index: 1000;">退出登录</a>
 
 <main>
-  <section class="py-5 text-center container">
-    <div class="row py-lg-5">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        <h1 class="fw-light mb-3">澳门科技大学汪文勇教授团队师生纪念</h1>
-        <p class="lead text-muted mb-4">记录团队点滴，见证师生情谊</p>
+  <section class="py-5 text-center">
+    <div class="container" id="bg-container"
+     style="background: url('{{ url_for('static', filename='bg-must.jpg') }}') center center/cover no-repeat; min-height: 275px; border-radius: 18px; position: relative; overflow: hidden;">
+      <div class="row py-lg-5" style="background: rgba(255,255,255,0.75); border-radius: 18px;">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <h1 class="fw-light mb-3">澳门科技大学汪文勇教授团队师生纪念</h1>
+          <p class="lead text-muted mb-4">记录团队点滴，见证师生情谊</p>
           <a href="/upload_photo" class="btn btn-primary my-2 me-2">上传照片</a>
           <a href="/upload_video" class="btn btn-primary my-2 me-2">上传视频</a>
-  
+        </div>
       </div>
     </div>
   </section>
@@ -72,5 +74,18 @@
     </div>
   </div>
 </main>
+
+<script>
+  // 轮播图片列表
+  const bgImages = [
+    "{{ url_for('static', filename='bg-must.jpg') }}",
+    "{{ url_for('static', filename='bg-uestc.png') }}"
+  ];
+  let bgIndex = 0;
+  setInterval(function() {
+    bgIndex = (bgIndex + 1) % bgImages.length;
+    document.getElementById('bg-container').style.backgroundImage = `url('${bgImages[bgIndex]}')`;
+  }, 5000); // 每5秒切换一次
+</script>
 </body>
 </html>
