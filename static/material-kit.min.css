@@ -1,0 +1,98 @@
+/* Material Kit 4.0.0 minimal核心样式（仅保留主要色彩、卡片、按钮、输入框、阴影、圆角等Material风格） */
+:root {
+  --primary: #2196f3;
+  --primary-light: #6ec6ff;
+  --primary-dark: #1769aa;
+  --surface: #fff;
+  --on-surface: #222;
+  --border-radius: 16px;
+  --shadow: 0 2px 16px rgba(33,150,243,0.10);
+}
+body {
+  background: linear-gradient(120deg, #e3f0ff 0%, #b3e0ff 100%);
+  min-height: 100vh;
+  font-family: 'Roboto', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  color: var(--on-surface);
+}
+.material-card {
+  background: var(--surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem 1.2rem;
+  border: none;
+  transition: box-shadow 0.2s;
+}
+.material-card:hover {
+  box-shadow: 0 6px 32px rgba(33,150,243,0.13);
+}
+.material-btn {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.7rem 2.2rem;
+  box-shadow: 0 2px 8px rgba(33,150,243,0.13);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.material-btn:hover {
+  background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(33,150,243,0.18);
+}
+.material-btn-secondary {
+  background: #e3f0ff;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.7rem 2.2rem;
+  transition: background 0.2s, color 0.2s;
+}
+.material-btn-secondary:hover {
+  background: var(--primary);
+  color: #fff;
+}
+.material-input {
+  background: #e3f0ff;
+  border: 2px solid #e3f0ff;
+  border-radius: 10px;
+  padding: 1.2rem 1rem;
+  color: var(--primary);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+.material-input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+.material-title {
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.material-shadow {
+  box-shadow: 0 2px 16px rgba(33,150,243,0.10);
+}
+.material-pagination .page-link {
+  color: var(--primary);
+  border: none;
+  background: #fff;
+  border-radius: 6px;
+  margin: 0 2px;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+.material-pagination .page-link:hover {
+  background: var(--primary);
+  color: #fff;
+}
+.material-pagination .active .page-link {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+}
+.material-pagination .disabled .page-link {
+  color: #ccc;
+  background: #e3f0ff;
+}
