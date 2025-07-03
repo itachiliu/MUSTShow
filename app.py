@@ -8,6 +8,8 @@ import json
 USERNAME = 'admin'
 PASSWORD = '123456'
 
+EVENTS_FILE = 'static/events.json'
+
 app = Flask(__name__)
 app.secret_key = 'mustshow-2025-07-02-unique-key'
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
@@ -60,6 +62,16 @@ def save_descriptions(desc):
     with open(desc_file, 'w', encoding='utf-8') as f:
         json.dump(desc, f, ensure_ascii=False, indent=2)
 
+def load_events():
+    if os.path.exists(EVENTS_FILE):
+        with open(EVENTS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return []
+
+def save_events(events):
+    with open(EVENTS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(events, f, ensure_ascii=False, indent=2)        
+
 @app.route('/')
 @login_required
 def index():
@@ -79,11 +91,13 @@ def index():
                 photo_albums.append(album)
         else:
             album_covers[album] = None
+    events = load_events()  # 新增
     return render_template(
         'index.html',
         photo_albums=photo_albums,
         video_albums=video_albums,
-        album_covers=album_covers
+        album_covers=album_covers,
+        events=events  # 新增
     )
 
 @app.route('/upload_photo', methods=['GET', 'POST'])
@@ -222,6 +236,39 @@ def logout():
     flash('已退出登录', 'info')
     return redirect(url_for('login'))
 
+
+@app.route('/events', methods=['GET', 'POST'])
+@login_required
+def events():
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        if title and content:
+            events = load_events()
+            events.insert(0, {'title': title, 'content': content})
+            save_events(events)
+    events = load_events()
+    return render_template('events.html', events=events)
+
+@app.route('/delete_event/<int:event_id>', methods=['POST'])
+@login_required
+def delete_event(event_id):
+    events = load_events()
+    if 0 <= event_id < len(events):
+        events.pop(event_id)
+        save_events(events)
+    return redirect(url_for('events'))
+
+@app.route('/event/<int:event_id>', endpoint='view_event')
+@login_required
+def view_event(event_id):
+    events = load_events()
+    if 0 <= event_id < len(events):
+        event = events[event_id]
+        return render_template('event_view.html', event=event)
+    else:
+        flash('未找到该记事', 'danger')
+        return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5023)

@@ -227,3 +227,25 @@ video {
     color: #fff;
     box-shadow: 0 4px 16px rgba(33,150,243,0.18);
 }
+  /* ...原有样式... */
+
+  /* 按钮悬停突出效果 */
+  .btn,
+  .btn:focus {
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .btn:hover, .btn:active {
+    box-shadow: 0 4px 24px 0 rgba(33,150,243,0.18);
+    transform: translateY(-2px) scale(1.05);
+    z-index: 2;
+  }
+
+  /* 卡片悬停突出效果 */
+  .card {
+    transition: box-shadow 0.25s, transform 0.25s;
+  }
+  .card:hover {
+    box-shadow: 0 8px 32px 0 rgba(33,150,243,0.18);
+    transform: translateY(-6px) scale(1.03);
+    z-index: 3;
+  }

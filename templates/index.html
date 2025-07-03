@@ -1,11 +1,37 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>澳门科技大学汪文勇教授团队师生纪念</title>
+    <title>澳科大-电子科大汪文勇教授团队师生纪念</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      #slider-wrapper {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        overflow: hidden;
+        border-radius: 18px;
+      }
+      #slider-track {
+        display: flex;
+        height: 100%;
+        transition: transform 1s cubic-bezier(.77,0,.18,1);
+      }
+      #slider-track img {
+        width: 100%;
+        object-fit: cover;
+        height: 100%;
+        flex-shrink: 0;
+      }
+      #bg-container {
+        background: none !important;
+        min-height: 275px;
+        border-radius: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+    </style>
 </head>
 <body>
   <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary"
@@ -13,21 +39,50 @@
 
 <main>
   <section class="py-5 text-center">
-    <div class="container" id="bg-container"
-     style="background: url('{{ url_for('static', filename='bg-must.jpg') }}') center center/cover no-repeat; min-height: 275px; border-radius: 18px; position: relative; overflow: hidden;">
-      <div class="row py-lg-5" style="background: rgba(255,255,255,0.75); border-radius: 18px;">
+    <div class="container" id="bg-container">
+      <!-- 轮播图片层 -->
+      <div id="slider-wrapper">
+        <div id="slider-track">
+          <img src="{{ url_for('static', filename='bg-must.jpg') }}">
+          <img src="{{ url_for('static', filename='bg-uestc.png') }}">
+        </div>
+      </div>
+      <!-- 内容层 -->
+      <div class="row py-lg-5" style="background: rgba(255,255,255,0.75); border-radius: 18px; position: relative; z-index: 2;">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <h1 class="fw-light mb-3">澳门科技大学汪文勇教授团队师生纪念</h1>
+          <h1 class="fw-light mb-3">澳科大-电子科大汪文勇教授团队师生纪念</h1>
           <p class="lead text-muted mb-4">记录团队点滴，见证师生情谊</p>
           <a href="/upload_photo" class="btn btn-primary my-2 me-2">上传照片</a>
           <a href="/upload_video" class="btn btn-primary my-2 me-2">上传视频</a>
+          <a href="{{ url_for('events') }}" class="btn btn-primary my-2 me-2">记事管理</a>
         </div>
       </div>
     </div>
   </section>
   <div class="album py-5 bg-light">
     <div class="container">
-      <h2 class="mb-4" style="color:#2196f3;">照片相册</h2>
+
+      
+        <h2 class="mb-4" style="color:#2196f3;">时光札记</h2>
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 mb-4">
+        {% for event in events %}
+          <div class="col">
+            <a href="{{ url_for('view_event', event_id=loop.index0) }}" class="text-decoration-none text-dark">
+              <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                  <h5 class="card-title mb-2" style="color:#2196f3;">{{ event.title }}</h5>
+                  <p class="card-text text-truncate" style="color:#666;">{{ event.content }}</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% else %}
+          <div class="col-12 text-center text-muted">时间都去哪了</div>
+        {% endfor %}
+      </div>
+
+      <h2 class="mb-4" style="color:#2196f3;">光影留痕</h2>
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
         {% for album in photo_albums %}
           {% set cover = album_covers[album] %}
@@ -43,49 +98,75 @@
           </div>
         {% endfor %}
         {% if photo_albums|length == 0 %}
-        <div class="col-12 text-center text-muted">暂无相册</div>
+        <div class="col-12 text-center text-muted">光影不见了</div>
         {% endif %}
       </div>
       <!-- 视频相册区域 -->
-        <h2 class="mb-4 mt-5" style="color:#2196f3;">视频相册</h2>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
-          {% for album in video_albums %}
-            {% set cover = album_covers[album] %}
-            <div class="col">
-              <a href="{{ url_for('album_view', album=album) }}" class="text-decoration-none text-dark">
-                <div class="card shadow-sm border-0 h-100">
-                  <video class="card-img-top"
-                        style="object-fit:cover;max-height:200px;min-height:160px;border-radius:12px 12px 0 0;"
-                        preload="metadata" muted playsinline>
-                    <source src="{{ cover }}">
-                    您的浏览器不支持视频播放
-                  </video>
-                  <div class="card-body text-center">
-                    <h5 class="card-title mb-0" style="color:#2196f3;">{{ album }}</h5>
-                  </div>
+      <h2 class="mb-4 mt-5" style="color:#2196f3;">时光映像馆</h2>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+        {% for album in video_albums %}
+          {% set cover = album_covers[album] %}
+          <div class="col">
+            <a href="{{ url_for('album_view', album=album) }}" class="text-decoration-none text-dark">
+              <div class="card shadow-sm border-0 h-100">
+                <video class="card-img-top"
+                      style="object-fit:cover;max-height:200px;min-height:160px;border-radius:12px 12px 0 0;"
+                      preload="metadata" muted playsinline>
+                  <source src="{{ cover }}">
+                  您的浏览器不支持视频播放
+                </video>
+                <div class="card-body text-center">
+                  <h5 class="card-title mb-0" style="color:#2196f3;">{{ album }}</h5>
                 </div>
-              </a>
-            </div>
-          {% endfor %}
-          {% if video_albums|length == 0 %}
-          <div class="col-12 text-center text-muted">暂无视频相册</div>
-          {% endif %}
-        </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+        {% if video_albums|length == 0 %}
+        <div class="col-12 text-center text-muted">映像馆今天没开门</div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </main>
 
 <script>
-  // 轮播图片列表
-  const bgImages = [
-    "{{ url_for('static', filename='bg-must.jpg') }}",
-    "{{ url_for('static', filename='bg-uestc.png') }}"
-  ];
-  let bgIndex = 0;
-  setInterval(function() {
-    bgIndex = (bgIndex + 1) % bgImages.length;
-    document.getElementById('bg-container').style.backgroundImage = `url('${bgImages[bgIndex]}')`;
-  }, 5000); // 每5秒切换一次
+  // 无限左移轮播
+  const sliderTrack = document.getElementById('slider-track');
+  const images = sliderTrack.children;
+  const total = images.length;
+
+  // 克隆首尾图片，实现无缝轮播
+  const firstClone = images[0].cloneNode(true);
+  const lastClone = images[total - 1].cloneNode(true);
+  sliderTrack.appendChild(firstClone);
+  sliderTrack.insertBefore(lastClone, images[0]);
+
+  let index = 1;
+  const slideWidth = 100; // 百分比
+  sliderTrack.style.transform = `translateX(-${index * slideWidth}%)`;
+
+  function goToSlide(i, animate = true) {
+    if (animate) {
+      sliderTrack.style.transition = 'transform 1s cubic-bezier(.77,0,.18,1)';
+    } else {
+      sliderTrack.style.transition = 'none';
+    }
+    sliderTrack.style.transform = `translateX(-${i * slideWidth}%)`;
+  }
+
+  setInterval(() => {
+    index++;
+    goToSlide(index);
+    // 到达克隆的最后一张时，瞬间跳回真正的第一张
+    sliderTrack.addEventListener('transitionend', function handler() {
+      if (index === total + 1) {
+        index = 1;
+        goToSlide(index, false);
+      }
+      sliderTrack.removeEventListener('transitionend', handler);
+    });
+  }, 5000);
 </script>
 </body>
 </html>

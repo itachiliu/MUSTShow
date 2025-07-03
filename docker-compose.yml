@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  mustshow:
+    build: .
+    ports:
+      - "5023:5023"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_RUN_PORT=5023
+    command: flask run

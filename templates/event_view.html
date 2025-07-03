@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ event.title }} - 重大记事</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+      body {
+        background: #f5f7fa;
+      }
+      .event-card {
+        max-width: 600px;
+        margin: 60px auto 0 auto;
+        border-radius: 18px;
+        box-shadow: 0 2px 16px 0 rgba(33,150,243,0.08);
+        background: #fff;
+        padding: 2.5rem 2rem 2rem 2rem;
+        border: none;
+      }
+      .event-title {
+        color: #2196f3;
+        font-weight: 600;
+        font-size: 2rem;
+        margin-bottom: 1.2rem;
+        letter-spacing: 1px;
+      }
+      .event-content {
+        color: #444;
+        font-size: 1.15rem;
+        line-height: 1.8;
+        white-space: pre-wrap;
+        margin-bottom: 2rem;
+      }
+      .back-link {
+        color: #2196f3;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .back-link:hover {
+        color: #1769aa;
+        text-decoration: underline;
+      }
+    </style>
+</head>
+<body>
+  <div class="event-card">
+    <div class="event-title">{{ event.title }}</div>
+    <div class="event-content">{{ event.content }}</div>
+    <div class="text-end">
+      <a href="{{ url_for('index') }}" class="back-link">&larr; 返回首页</a>
+    </div>
+  </div>
+</body>
+</html>
