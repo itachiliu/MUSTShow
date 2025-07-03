@@ -25,7 +25,7 @@
               <form method="post" enctype="multipart/form-data" action="/upload_video">
                 <label for="album_video" class="form-label">选择相册</label>
                 <select class="form-select" id="album_video" name="album">
-                  <option value="">默认相册</option>
+                  <option value="">师生映像馆</option>
                   {% for album in video_albums %}
                   <option value="{{ album }}">{{ album }}</option>
                   {% endfor %}
@@ -50,5 +50,19 @@
     </div>
   </div>
 </main>
+<!-- ...你的页面内容... -->
+<div id="uploadingMask" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(33,150,243,0.18);backdrop-filter:blur(2px);">
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;padding:2rem 2.5rem;box-shadow:0 2px 24px 0 rgba(33,150,243,0.13);color:#2196f3;font-size:1.3rem;">
+    <div class="spinner-border text-primary mb-3" role="status"></div>
+    <div>正在上传，请稍候...</div>
+  </div>
+</div>
+<script>
+document.querySelectorAll('form[enctype="multipart/form-data"]').forEach(function(form){
+  form.addEventListener('submit', function(){
+    document.getElementById('uploadingMask').style.display = '';
+  });
+});
+</script>
 </body>
 </html>

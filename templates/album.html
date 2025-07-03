@@ -76,28 +76,25 @@
 <body>
 <main>
   <div class="container py-4">
-    <h2 class="mb-4" style="color:#2196f3;">相册：{{ album }}</h2>
+    <h2 class="mb-4" style="color:#2196f3;">展示：{{ album }}</h2>
     <div class="row row-cols-2 row-cols-md-4 g-3">
       {% for img in images %}
       <div class="col">
         <div class="card shadow-sm border-0 h-100">
           {% set ext = img.rsplit('.', 1)[-1].lower() %}
           {% if ext in ['mp4', 'mov', 'avi', 'webm'] %}
-              <video class="card-img-top img-fluid rounded"
-                style="object-fit:cover;max-height:180px;cursor:pointer;"
-                data-bs-toggle="modal" data-bs-target="#imgModal"
-                data-img="{{ img }}" data-index="{{ loop.index0 }}"
-                preload="metadata" controls muted poster="/static/video_cover.png">
-              <source src="/static/uploads/{{ album }}/{{ img }}">
-        您的浏览器不支持视频播放
-            </video>
+              <img class="card-img-top img-fluid rounded video-thumb"
+                    data-video="/static/uploads/{{ album }}/{{ img }}"
+                    style="object-fit:cover;max-height:180px;cursor:pointer;"
+                    data-bs-toggle="modal" data-bs-target="#imgModal"
+                    data-img="{{ img }}" data-index="{{ loop.index0 }}">
           {% else %}
             <img src="/static/uploads/{{ album }}/{{ img }}" class="card-img-top img-fluid rounded"
                 style="object-fit:cover;max-height:180px;cursor:pointer;"
                 data-bs-toggle="modal" data-bs-target="#imgModal"
                 data-img="{{ img }}" data-index="{{ loop.index0 }}">
           {% endif %}
-          <div class="img-desc">{{ image_desc[img] or '暂无描述' }}</div>
+          <div class="img-desc">{{ image_desc[img] or '等你来描述' }}</div>
           <form method="post" action="{{ url_for('delete_file', album=album, filename=img) }}" onsubmit="return confirm('确定要删除这项吗？');">
             <button type="submit" class="btn btn-sm btn-danger mt-2 w-100">删除</button>
           </form>
@@ -105,10 +102,10 @@
       </div>
       {% endfor %}
       {% if images|length == 0 %}
-      <div class="col-12 text-center text-muted">暂无照片</div>
+      <div class="col-12 text-center text-muted">你还有创建哦</div>
       {% endif %}
     </div>
-    <a href="/" class="btn btn-secondary mt-4">返回相册列表</a>
+    <a href="/" class="btn btn-secondary mt-4">返回首页</a>
   </div>
 
   <!-- Modal -->
@@ -229,5 +226,28 @@ nextBtn.onclick = function() {
     updateModal(currentIndex + 1);
   }
 };
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.video-thumb').forEach(function(img){
+    var videoSrc = img.getAttribute('data-video');
+    var video = document.createElement('video');
+    video.src = videoSrc;
+    video.preload = 'metadata';
+    video.muted = true;
+    video.currentTime = 0.1;
+    video.addEventListener('loadeddata', function() {
+      var canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      img.src = canvas.toDataURL('image/png');
+      video.remove();
+      canvas.remove();
+    });
+  });
+});
+
 </script>
 </body>

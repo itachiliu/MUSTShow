@@ -74,7 +74,7 @@
               <form method="post" enctype="multipart/form-data" action="/upload_photo">
                 <label for="album_photo" class="form-label">选择相册</label>
                 <select class="form-select mb-3" id="album_photo" name="album">
-                  <option value="">默认相册</option>
+                  <option value="">光影留痕</option>
                   {% for album in photo_albums %}
                   <option value="{{ album }}">{{ album }}</option>
                   {% endfor %}
@@ -98,6 +98,12 @@
       </div>
     </div>
   </div>
+  <div id="uploadingMask" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(33,150,243,0.18);backdrop-filter:blur(2px);">
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;padding:2rem 2.5rem;box-shadow:0 2px 24px 0 rgba(33,150,243,0.13);color:#2196f3;font-size:1.3rem;">
+    <div class="spinner-border text-primary mb-3" role="status"></div>
+    <div>正在上传，请稍候...</div>
+  </div>
+</div>
 </main>
 <!-- FilePond JS -->
 <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
@@ -110,14 +116,22 @@
     FilePondPluginFileValidateSize,
     FilePondPluginImagePreview
   );
-  FilePond.create(document.getElementById('file_photo_multi'), {
-    labelIdle: '拖拽或 <span class="filepond--label-action">点击选择照片</span>（可多选）',
-    allowMultiple: true,
-    allowReorder: true,
-    acceptedFileTypes: ['image/*'],
-    maxFiles: 50,
-    maxFileSize: '10MB'
+FilePond.create(document.getElementById('file_photo_multi'), {
+  labelIdle: '拖拽或 <span class="filepond--label-action">点击选择照片</span>（可多选）',
+  allowMultiple: true,
+  allowReorder: true,
+  acceptedFileTypes: ['image/*'],
+  maxFiles: 50,
+  maxFileSize: '10MB',
+  storeAsFile: true // 关键！让 FilePond 以标准表单方式上传
+});
+
+document.querySelectorAll('form[enctype="multipart/form-data"]').forEach(function(form){
+  form.addEventListener('submit', function(){
+    document.getElementById('uploadingMask').style.display = '';
   });
+});
+
 </script>
 </body>
 </html>

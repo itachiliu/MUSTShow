@@ -4,6 +4,7 @@ from functools import wraps
 import os
 from werkzeug.utils import secure_filename
 import json
+from datetime import datetime
 
 USERNAME = 'admin'
 PASSWORD = '123456'
@@ -113,7 +114,7 @@ def upload_photo():
             album_covers[album] = None
 
     if request.method == 'POST':
-        album = request.form.get('album') or '默认相册'
+        album = request.form.get('album') or '光影留痕'
         new_album = request.form.get('new_album', '').strip()
         if new_album:
             album = new_album
@@ -167,7 +168,7 @@ def upload_video():
         else:
             album_covers[album] = None
     if request.method == 'POST':
-        album = request.form.get('album') or '默认相册'
+        album = request.form.get('album') or '师生映像馆'
         new_album = request.form.get('new_album', '').strip()
         if new_album:
             album = new_album
@@ -256,7 +257,7 @@ def events():
         content = request.form.get('content', '').strip()
         if title and content:
             events = load_events()
-            events.insert(0, {'title': title, 'content': content})
+            events.insert(0, {'title': title, 'content': content, 'date': datetime.now().strftime('%Y-%m-%d')})
             save_events(events)
     events = load_events()
     return render_template('events.html', events=events)

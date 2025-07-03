@@ -54,7 +54,7 @@
           <p class="lead text-muted mb-4">记录团队点滴，见证师生情谊</p>
           <a href="/upload_photo" class="btn btn-primary my-2 me-2">上传照片</a>
           <a href="/upload_video" class="btn btn-primary my-2 me-2">上传视频</a>
-          <a href="{{ url_for('events') }}" class="btn btn-primary my-2 me-2">记事管理</a>
+          <a href="{{ url_for('events') }}" class="btn btn-primary my-2 me-2">札记管理</a>
         </div>
       </div>
     </div>
@@ -73,12 +73,15 @@
                 <div class="card-body">
                   <h5 class="card-title mb-2" style="color:#2196f3;">{{ event.title }}</h5>
                   <p class="card-text text-truncate" style="color:#666;">{{ event.content }}</p>
+                  {% if event.date %}
+                    <div class="text-muted small mt-2">{{ event.date }}</div>
+                  {% endif %}
                 </div>
               </div>
             </a>
           </div>
         {% else %}
-          <div class="col-12 text-center text-muted">时间都去哪了</div>
+          <div class="col-12 text-center text-muted">时间都去哪了呢？</div>
         {% endfor %}
       </div>
 
@@ -98,7 +101,7 @@
           </div>
         {% endfor %}
         {% if photo_albums|length == 0 %}
-        <div class="col-12 text-center text-muted">光影不见了</div>
+        <div class="col-12 text-center text-muted">光影好像出去玩咯</div>
         {% endif %}
       </div>
       <!-- 视频相册区域 -->
@@ -123,7 +126,7 @@
           </div>
         {% endfor %}
         {% if video_albums|length == 0 %}
-        <div class="col-12 text-center text-muted">映像馆今天没开门</div>
+        <div class="col-12 text-center text-muted">映像馆今天好像还没开门</div>
         {% endif %}
       </div>
     </div>
