@@ -111,6 +111,7 @@ def upload_photo():
             album_covers[album] = f"/static/uploads/{album}/{files[0]}"
         else:
             album_covers[album] = None
+
     if request.method == 'POST':
         album = request.form.get('album') or '默认相册'
         new_album = request.form.get('new_album', '').strip()
@@ -118,21 +119,31 @@ def upload_photo():
             album = new_album
         album_folder = os.path.join(app.config['UPLOAD_FOLDER'], album)
         os.makedirs(album_folder, exist_ok=True)
-        if 'file' not in request.files:
-            return redirect(request.url)
-        file = request.files['file']
         desc_text = request.form.get('desc', '').strip()
-        if file.filename == '':
+
+        # 支持批量上传和单张上传
+        files = request.files.getlist('file')
+        if not files or (len(files) == 1 and files[0].filename == ''):
             return redirect(request.url)
-        # 只允许图片
-        if file and file.filename.rsplit('.', 1)[-1].lower() in ['png', 'jpg', 'jpeg', 'gif']:
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(album_folder, filename))
-            if desc_text:
-                desc = load_descriptions()
-                desc[f"{album}/{filename}"] = desc_text
-                save_descriptions(desc)
-            return redirect(url_for('album_view', album=album))
+
+        desc = load_descriptions()
+        for file in files:
+            if file and file.filename and file.filename.rsplit('.', 1)[-1].lower() in ['png', 'jpg', 'jpeg', 'gif']:
+                filename = secure_filename(file.filename)
+                save_path = os.path.join(album_folder, filename)
+                # 防止同名覆盖
+                base, ext = os.path.splitext(filename)
+                counter = 1
+                while os.path.exists(save_path):
+                    filename = f"{base}_{counter}{ext}"
+                    save_path = os.path.join(album_folder, filename)
+                    counter += 1
+                file.save(save_path)
+                if desc_text:
+                    desc[f"{album}/{filename}"] = desc_text
+        save_descriptions(desc)
+        return redirect(url_for('album_view', album=album))
+
     # 只传递图片相册用于下拉
     photo_albums = [a for a in albums if any(
         img.rsplit('.', 1)[-1].lower() not in ['mp4', 'mov', 'avi', 'webm']
